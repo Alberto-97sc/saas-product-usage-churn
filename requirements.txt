@@ -1,0 +1,8 @@
+# Pin versions for reproducible installs (Python 3.12+)
+pandas==3.0.0
+numpy==2.4.2
+matplotlib==3.10.8
+scikit-learn==1.7.2
+notebook==7.5.6
+ipykernel==7.1.0
+nbconvert==7.17.1

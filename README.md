@@ -83,13 +83,11 @@ saas-product-usage-churn/
 │   └── processed/        # Cleaned and feature-engineered data
 │
 ├── notebooks/
-│   └── 01_eda.ipynb      # Exploratory data analysis
+│   ├── 01_eda.ipynb          # Exploratory data analysis
+│   └── 02_modeling.ipynb     # Baseline models (train/test, metrics)
 │
 ├── src/
-│   ├── data/             # Data loading and preprocessing
-│   ├── features/         # Feature engineering logic
-│   ├── models/           # Model training
-│   └── evaluation/       # Model evaluation and metrics
+│   └── churn_data.py         # Shared CSV load + feature/target prep
 │
 ├── requirements.txt
 └── README.md
@@ -107,15 +105,26 @@ saas-product-usage-churn/
 
 ---
 
+## 🛠 Environment setup
+
+```bash
+cd saas-product-usage-churn
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Run notebooks from the repo root (or open in Jupyter / VS Code with the `.venv` kernel). `02_modeling.ipynb` adds the repo root to `sys.path` so `import src.churn_data` works whether the kernel cwd is the project root or `notebooks/`.
+
 ## 🚀 Status
 
 🔧 **Work in progress**
 
 Current focus:
-- Dataset exploration
-- Understanding churn behavior through EDA
+- EDA (`notebooks/01_eda.ipynb`)
+- Baseline modeling (`notebooks/02_modeling.ipynb`) — stratified split, logistic regression & random forest, ROC-AUC / PR-AUC
 
-Future updates will include feature engineering, modeling, and interpretation.
+Next: stronger tabular models, threshold tuning, and interpretation (e.g. SHAP) as needed.
 
 ---
 
