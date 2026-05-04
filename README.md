@@ -1,134 +1,89 @@
-# SaaS Product Usage Churn Prediction
+# SaaS churn — usage & behavior
 
-## 📌 Project Overview
+End-to-end **tabular churn** analysis: **EDA → preprocessing → baselines → interpretation**, with a **reproducible** Python environment, **automated tests**, **CI**, and a **CLI training script** (metrics without opening Jupyter).
 
-Customer churn is a critical problem for subscription-based digital products such as SaaS platforms.  
-This project focuses on **predicting customer churn using product usage and behavioral data**, with the goal of identifying at-risk users and supporting data-driven retention decisions.
-
-Rather than treating churn as a purely technical classification task, this project emphasizes **customer behavior, engagement patterns, and actionable insights** derived from model interpretation.
+> **Dataset:** synthetic CSV (methodology demo, not production KPIs).
 
 ---
 
-## 🎯 Objective
+## Scope
 
-The main objective of this project is to:
+Customer **churn** is a common subscription-product problem. This repository demonstrates:
 
-> **Predict customer churn in a SaaS product using usage, engagement, and friction signals in order to identify customers at risk and understand the key drivers behind churn.**
-
----
-
-## 📊 Dataset
-
-The dataset used in this project contains **synthetic subscription-based customer data** designed to reflect realistic behavior in digital products such as SaaS platforms, OTT services, or online learning systems.
-
-- **Records:** 2,800 customers  
-- **Data type:** Synthetic and anonymized  
-- **Format:** CSV  
-- **Target variable:** `churn` (Yes / No)
-
-Although the data is synthetic, it captures realistic patterns of customer behavior and is suitable for modeling churn drivers, product engagement, and retention strategies.
-
-### Key Features
-
-- **Subscription & pricing**
-  - `plan_type`
-  - `monthly_fee`
-
-- **Product usage & engagement**
-  - `avg_weekly_usage`
-  - `last_login_days`
-
-- **Customer friction signals**
-  - `support_tickets`
-  - `payment_failures`
-
-- **Customer relationship**
-  - `tenure_months`
-  - `signup_date`
+1. Explore churn vs **usage**, **recency**, **friction** (support / payments), and **plan/fee** signals (`notebooks/01_eda.ipynb`).
+2. Build **sklearn pipelines** (scaling + one-hot) and compare **logistic regression** vs **random forest** with **stratified** splits and **ROC-AUC / PR-AUC** under class imbalance (`notebooks/02_modeling.ipynb`).
+3. Summarize outcomes in a **written report** (last section of the modeling notebook).
 
 ---
 
-## 🧠 Project Approach
+## Quick start
 
-This project follows an end-to-end data science workflow:
+```bash
+git clone <your-fork-url> saas-product-usage-churn
+cd saas-product-usage-churn
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+pytest -q                          # unit + smoke tests
+python scripts/train_baseline.py   # prints holdout metrics (no notebook)
+```
 
-1. **Exploratory Data Analysis (EDA)**  
-   - Understand customer behavior and churn distribution  
-   - Analyze engagement, usage, and friction patterns  
-
-2. **Feature Engineering**  
-   - Transform raw usage and temporal signals into meaningful features  
-
-3. **Modeling**  
-   - Train baseline and machine learning models for churn prediction  
-   - Address class imbalance and model evaluation trade-offs  
-
-4. **Evaluation & Interpretation**  
-   - Evaluate performance using appropriate classification metrics  
-   - Interpret model outputs to identify key churn drivers  
-
-5. **Business Insights**  
-   - Translate model results into actionable retention strategies  
+Open `notebooks/01_eda.ipynb` and `notebooks/02_modeling.ipynb` with the `.venv` kernel. The modeling notebook prepends the repo root to `sys.path` so `import src.churn_data` works from `notebooks/` or from the project root.
 
 ---
 
-## 📂 Repository Structure
+## Results snapshot (held-out test, stratified 75/25)
 
+| Model | ROC-AUC | PR-AUC |
+| --- | ---: | ---: |
+| Logistic regression | 0.7003 | 0.7258 |
+| Random forest | **0.7056** | **0.7625** |
+
+Test churn prevalence ≈ **57%** — PR-AUC should be read against that baseline. Details and interpretation: **`notebooks/02_modeling.ipynb`** (written report at the end).
+
+---
+
+## Repository layout
 
 ```
 saas-product-usage-churn/
-│
 ├── data/
-│   ├── raw/              # Original dataset
-│   └── processed/        # Cleaned and feature-engineered data
-│
+│   ├── raw/                     # Source CSV
+│   └── processed/               # Placeholder for future artifacts
 ├── notebooks/
-│   ├── 01_eda.ipynb          # Exploratory data analysis
-│   └── 02_modeling.ipynb     # Baseline models (train/test, metrics)
-│
+│   ├── 01_eda.ipynb             # Exploratory analysis + cohort views
+│   └── 02_modeling.ipynb        # Baselines + written summary
+├── scripts/
+│   └── train_baseline.py        # CLI: train + print metrics
 ├── src/
-│   └── churn_data.py         # Shared CSV load + feature/target prep
-│
+│   ├── churn_data.py            # Load CSV + build X, y
+│   └── baseline.py             # Shared preprocessing + model definitions
+├── tests/                       # pytest
 ├── requirements.txt
+├── pytest.ini
 └── README.md
 ```
 
+---
 
+## Tech stack
 
-## 🛠 Tools & Technologies
-
-- **Programming:** Python  
-- **Data Analysis:** pandas, NumPy  
-- **Machine Learning:** scikit-learn  
-- **Visualization:** Matplotlib, Seaborn  
-- **Model Interpretation:** SHAP (planned)  
+Python **3.12**, **pandas**, **NumPy**, **scikit-learn**, **Matplotlib**, **Jupyter** / **nbconvert**, **pytest**, **GitHub Actions** (CI).
 
 ---
 
-## 🛠 Environment setup
+## Status
 
-```bash
-cd saas-product-usage-churn
-python3 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-Run notebooks from the repo root (or open in Jupyter / VS Code with the `.venv` kernel). `02_modeling.ipynb` adds the repo root to `sys.path` so `import src.churn_data` works whether the kernel cwd is the project root or `notebooks/`.
-
-## 🚀 Status
-
-🔧 **Work in progress**
-
-Current focus:
-- EDA (`notebooks/01_eda.ipynb`)
-- Baseline modeling (`notebooks/02_modeling.ipynb`) — stratified split, logistic regression & random forest, ROC-AUC / PR-AUC
-
-Next: stronger tabular models, threshold tuning, and interpretation (e.g. SHAP) as needed.
+**Delivered for the current scope:** reproducible EDA, baseline modeling, written interpretation, tests, and CI. Possible extensions: gradient boosting, SHAP, probability calibration / threshold tuning, or a small batch inference service.
 
 ---
 
-## 📌 Notes
+## Resumen (ES)
 
-- This project uses synthetic data for demonstration and learning purposes.
-- The emphasis is on **methodology, reasoning, and interpretability**, rather than maximizing a single performance metric.
+Análisis de **churn** en un contexto tipo **SaaS** usando datos **sintéticos** (enfoque metodológico). Incluye **EDA** exploratorio, **modelos baseline** (regresión logística y bosque aleatorio), evaluación con métricas adecuadas para **clase desbalanceada** (ROC-AUC / PR-AUC), un **informe interpretativo** en el notebook de modelado, un **script** reproducible (`scripts/train_baseline.py`), **pruebas automatizadas** y **integración continua** para validar el flujo en cada cambio.
+
+---
+
+## License
+
+MIT — see [`LICENSE`](LICENSE).
